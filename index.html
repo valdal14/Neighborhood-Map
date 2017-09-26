@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,51 +10,55 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <title>Neighborhood Map</title>
 </head>
+
 <body>
-    
+
     <nav data-bind="css: {open: openMenu() == true}, click: openCloseMenu">
-      <h1 class="title">Málaga' Locations</h1>
-      <div class="userform">
-        <input type="text" class="userSearch" name="user" data-bind="click: openCloseMenu, textInput: usersearch, valueUpdate: keypress, event: {keyup: filterUserText}" placeholder="Filter locations ...">
-      </div>
+        <h1 class="title">Málaga' Locations</h1>
+        <div class="userform">
+            <input type="text" class="userSearch" name="user" data-bind="click: openCloseMenu, textInput: usersearch, valueUpdate: keypress, event: {keyup: filterUserText}" placeholder="Filter locations ...">
+        </div>
         <ul class="items" data-bind="foreach: userLocation">
-          <li data-bind="text: $data.address, click:  $parent.listClick"></li>
-          <br>
+            <li data-bind="text: $data.address, click:  $parent.listClick"></li>
+
         </ul>
-      </nav>
-     
-       <main class="map">
-         <img src="images/hamburger.png" alt="menu" id="hamburger" data-bind="click: openCloseMenu">
-         <!-- Loading the map -->
-         <div id="map" data-bind="event: {load: initMarkers()}">
+    </nav>
 
-         </div>
-       </main>
+    <main class="map">
+        <img src="images/hamburger.png" alt="menu" id="hamburger" data-bind="click: openCloseMenu">
+        <!-- Loading the map -->
+        <div id="map" data-bind="event: {load: initMarkers()}">
 
-       <!-- Bootstrap Modal -->
-       <div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+        </div>
+    </main>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Opppssss.... There was an error :(</h4>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Opppssss.... There was an error :(</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="errors"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="modal-body">
-              <p class="errors"></p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
-      
+
     <script src="http://knockoutjs.com/downloads/knockout-3.4.2.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="scripts/bootstrap.min.js"></script>
     <script src="scripts/app.js"></script>
-    <script async defer 
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNUuAV_u1BPgmWZEd4QqgpKXhluxYl3bw&callback=initMap">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNUuAV_u1BPgmWZEd4QqgpKXhluxYl3bw&callback=initMap">
     </script>
 </body>
+
 </html>

@@ -1,0 +1,100 @@
+html, body, main {
+    height: 100%
+    width 100%;
+    color: #E8EAF6;
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    line-height: 1.2em;
+  }
+  
+  nav {
+    width: 300px;
+    position: absolute;
+    height: 104vh;
+    /* This trasform moves the drawer off canvas. */
+    -webkit-transform: translate(-300px, 0);
+    transform: translate(-300px, 0);
+    /* Optionally, we animate the drawer. */
+    transition: transform 0.3s ease;
+    background-color: #000000;
+    
+  }
+  
+  nav.open {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+    z-index: 2;
+  }
+  
+  .map {
+    background-color: #262626;
+  }
+
+  #map{
+    height: 100vh;
+    max-width: 100%;
+    color: #262626;
+  }
+  
+  
+  .items {
+    list-style: none;
+    color: white;
+  }
+
+  .title {
+    margin-left: 38px;
+    color: white;
+  }
+
+  li {
+    padding-right: 15px;
+  }
+
+  #hamburger{
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-bottom: 20px;
+  }
+
+  .userSearch{
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 30px;
+    width: 90%;
+    color: #5879C2;
+  }
+
+  #filters{
+    background-color: #5879C2;
+    color: white;
+    font-size: 16px;
+  }
+
+  .errors{
+    margin-left: 5px;
+    text-align: center;
+    color: red;
+  }
+  
+  /* above 600 px*/
+  @media screen and (min-width: 750px){
+    nav {
+      position: relative;
+      transform: translate(0, 0);
+    }
+    
+    body {
+      display: flex;
+      flex-flow: row nowrap;
+    }
+  
+    main {
+      width: auto;
+      flex-grow: 1;
+    }
+  
+  }
+
+/*  #5879C2 */
+/*  #262626 */

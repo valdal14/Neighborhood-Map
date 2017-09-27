@@ -1,4 +1,5 @@
-"use strict";
+/*jshint strict:false */ 
+/* globals google, ko, $ */
 
 let map;
 let marker;
@@ -106,7 +107,7 @@ class Map {
                       `);
                             infowindow.open(map, marker);
                             toggleBounce(marker);
-                        }
+                        };
                     })(marker));
 
 
@@ -123,8 +124,8 @@ class Map {
      * refresh the google map instance
      */
     updateMap() {
-            initMap();
-        } // end
+        initMap();
+    } // end
 
 } // end of Map class
 
@@ -144,7 +145,7 @@ function initMap() {
         mapTypeId: 'terrain'
     });
 
-    infowindow = new google.maps.InfoWindow;
+    infowindow = new google.maps.InfoWindow();
 }
 
 /*
@@ -154,7 +155,7 @@ function initMap() {
  */
 function toggleBounce(marker) {
 
-        marker.getAnimation() ? marker.setAnimation(null) : marker.setAnimation(google.maps.Animation.BOUNCE)
+        marker.getAnimation() ? marker.setAnimation(null) : marker.setAnimation(google.maps.Animation.BOUNCE);
 
         setTimeout(() => {
             marker.setAnimation(null);
@@ -174,8 +175,8 @@ let ViewModel = function() {
 
     // binding the img of the hamburger menu on click event
     this.openCloseMenu = function() {
-            this.openMenu() === false ? this.openMenu(true) : this.openMenu(false)
-        } // end
+            this.openMenu() === false ? this.openMenu(true) : this.openMenu(false);
+    }; // end
 
     //handle the click event in the list of locations
     this.listClick = function() {
@@ -188,7 +189,7 @@ let ViewModel = function() {
                     toggleBounce(marker);
                 }
             });
-        } // end of listClick
+    }; // end of listClick
 
     //filter user input text change
     this.filterUserText = function() {
@@ -213,7 +214,7 @@ let ViewModel = function() {
                         address: marker.title,
                         description: marker.description,
                         icon: marker.icon
-                    }
+                    };
 
                     for (let i = 0; i < locations.length; i++) {
 
@@ -237,14 +238,14 @@ let ViewModel = function() {
 
         }
 
-    } // end of filterUserText
+    }; // end of filterUserText
 
     // position markers into the map when the page is loaded
     this.initMarkers = function() {
         classMap.createMarkers(locations);
-    }
+    };
 
-}
+};
 
 
 //instance of the Map class

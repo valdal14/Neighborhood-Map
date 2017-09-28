@@ -12,53 +12,27 @@ let infowindow;
  *
  */
 let locations = [{
-    address: 'Calle Molina Lario, 10, 29015 Málaga',
+    title: 'Calle Molina Lario, 10, 29015 Málaga',
     description: 'Museum',
     icon: 'images/placeholder.png'
 }, {
-    address: 'Calle Duque de la Victoria, 2, 29015 Málaga',
+    title: 'Calle Duque de la Victoria, 2, 29015 Málaga',
     description: 'Heritage Museum',
     icon: 'images/placeholder.png'
 }, {
-    address: 'Paseo España, 2, 29015 Málaga',
+    title: 'Paseo España, 2, 29015 Málaga',
     description: 'Park',
     icon: 'images/placeholder.png'
 }, {
-    address: 'Alameda Principal, 3, 29001 Málaga',
+    title: 'Alameda Principal, 3, 29001 Málaga',
     description: 'Monument',
     icon: 'images/placeholder.png'
 }, {
-    address: 'Calle Strachan, 7, 29015 Málaga',
+    title: 'Calle Strachan, 7, 29015 Málaga',
     description: 'Tavern',
     icon: 'images/placeholder.png'
 }, {
-    address: 'Av. de Andalucía, 15, 29002 Málaga',
-    description: 'Park',
-    icon: 'images/placeholder.png'
-}];
-
-const originalLocations = [{
-    address: 'Calle Molina Lario, 10, 29015 Málaga',
-    description: 'Museum',
-    icon: 'images/placeholder.png'
-}, {
-    address: 'Calle Duque de la Victoria, 2, 29015 Málaga',
-    description: 'Heritage Museum',
-    icon: 'images/placeholder.png'
-}, {
-    address: 'Paseo España, 2, 29015 Málaga',
-    description: 'Park',
-    icon: 'images/placeholder.png'
-}, {
-    address: 'Alameda Principal, 3, 29001 Málaga',
-    description: 'Monument',
-    icon: 'images/placeholder.png'
-}, {
-    address: 'Calle Strachan, 7, 29015 Málaga',
-    description: 'Tavern',
-    icon: 'images/placeholder.png'
-}, {
-    address: 'Av. de Andalucía, 15, 29002 Málaga',
+    title: 'Av. de Andalucía, 15, 29002 Málaga',
     description: 'Park',
     icon: 'images/placeholder.png'
 }];
@@ -81,7 +55,7 @@ class Map {
      */
     createMarkers(clientLocations) {
             clientLocations.forEach((location) => {
-                fetch(`https://maps.google.com/maps/api/geocode/json?address=${location.address}&key=${this.API_KEY}`, {
+                fetch(`https://maps.google.com/maps/api/geocode/json?address=${location.title}&key=${this.API_KEY}`, {
                     method: 'post'
                 }).then((response) => {
                     return response.json();
@@ -91,7 +65,7 @@ class Map {
                         position: data.results[0].geometry.location,
                         map: map,
                         animation: google.maps.Animation.DROP,
-                        title: location.address,
+                        title: location.title,
                         icon: location.icon,
                         description: location.description
                     });
@@ -102,7 +76,7 @@ class Map {
                     // add an event handler to the markers
                     google.maps.event.addListener(marker, 'click', (function(marker) {
                         return function() {
-                            infowindow.setContent(`<h3>${location.address}</h3>
+                            infowindow.setContent(`<h3>${location.title}</h3>
                       <p>${location.description}</p>
                       `);
                             infowindow.open(map, marker);
@@ -119,13 +93,21 @@ class Map {
         } // end of getMarkers
 
     /*
-     * updateMap()
+     * listLocation(arrayOfMarker)
      *
-     * refresh the google map instance
+     * Gets an array of markers and return an array with title location strings
      */
-    updateMap() {
-        initMap();
-    } // end
+    listLocation(arrayOfMarker){
+        let listLocations = [];
+
+        arrayOfMarker.forEach((marker)=>{
+            if(marker.visible){
+                listLocations.push({title: marker.title});
+            }
+        });
+
+        return listLocations;
+    }
 
 } // end of Map class
 
@@ -181,7 +163,7 @@ let ViewModel = function() {
     //handle the click event in the list of locations
     this.listClick = function() {
             classMap.markers.forEach((marker) => {
-                if (this.address === marker.title) {
+                if (this.title === marker.title) {
                     infowindow.open(map, marker);
                     infowindow.setContent(`<h3>${marker.title}</h3>
                 <p>${marker.description}</p>
@@ -196,51 +178,25 @@ let ViewModel = function() {
 
         if (this.usersearch() === "") {
 
-            // restore the original locations 
-            locations = originalLocations.slice(0);
-            this.initMarkers(locations);
-            this.userLocation(locations);
-            classMap.updateMap();
-
+            classMap.markers.forEach((marker)=>{
+                marker.setVisible(true);
+            });
+            
+            this.userLocation(classMap.listLocation(classMap.markers));
         }
 
-        if (this.usersearch().length >= 4) {
+        if (this.usersearch() !== "") {
 
             classMap.markers.forEach((marker) => {
-
-                if (this.usersearch() === marker.title || this.usersearch() === marker.description) {
-
-                    let obj = {
-                        address: marker.title,
-                        description: marker.description,
-                        icon: marker.icon
-                    };
-
-                    for (let i = 0; i < locations.length; i++) {
-
-                        if (locations[i].description === obj.description) {
-                            // update the location array
-                            locations.push({
-                                obj
-                            });
-
-                        } else {
-                            locations.splice(i, 1);
-                        }
-                    }
-                }
-
+                this.usersearch() === marker.title || this.usersearch() === marker.description ? marker.setVisible(true) : marker.setVisible(false);
             });
 
-            this.initMarkers(locations);
-            this.userLocation(locations);
-            classMap.updateMap();
-
+            this.userLocation(classMap.listLocation(classMap.markers));
         }
 
     }; // end of filterUserText
 
-    // position markers into the map when the page is loaded
+    //position markers into the map when the page is loaded
     this.initMarkers = function() {
         classMap.createMarkers(locations);
     };

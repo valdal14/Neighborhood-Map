@@ -3,7 +3,8 @@
 
 let map;
 let marker;
-let infowindow;
+let infowindow; 
+let token;
 
 /*
  * The array of locations in a client-server application would be the
@@ -46,6 +47,15 @@ class Map {
     constructor(arrayOfLocations) {
         this.markers = [];
         this.API_KEY = 'AIzaSyDNUuAV_u1BPgmWZEd4QqgpKXhluxYl3bw';
+        this.clientId = "EYM4ZVOPQUCPFYGT233NJ2DV3FRPI3UBC3CNDF331IA4V2WJ";
+        this.clientSecret = "EEVZLIERJ4VXZPKTU2LFLMFESPWQWOW3BZUCWCJJVJ2KRCKG";
+        this.token = "";
+        this.prefix = "";
+        this.size = "";
+        this.suffix = "";
+        this.width = "";
+        this.height = "";
+        this.imageUrl = "";
     }
 
     /*
@@ -54,12 +64,22 @@ class Map {
      * arg: takes a user location info array and initialize an array of markers
      */
     createMarkers(clientLocations) {
-            clientLocations.forEach((location) => {
-                fetch(`https://maps.google.com/maps/api/geocode/json?address=${location.title}&key=${this.API_KEY}`, {
-                    method: 'post'
-                }).then((response) => {
-                    return response.json();
-                }).then((data) => {
+        clientLocations.forEach((location) => {
+            fetch(`https://maps.google.com/maps/api/geocode/json?address=${location.title}&key=${this.API_KEY}`, {
+                method: 'post'
+            }).then((response) => {
+                return response.json();
+            }).then((data) => {
+                
+                console.log(data.results[0].geometry.location.lat);
+                console.log(data.results[0].geometry.location.lng);
+                console.log(location.description);
+
+
+                //get the venue id
+                this.getVenue(data.results[0].geometry.location.lat, data.results[0].geometry.location.lng, location.description);
+
+                setTimeout(()=>{
                     // build a Google Map marker
                     marker = new google.maps.Marker({
                         position: data.results[0].geometry.location,
@@ -70,27 +90,43 @@ class Map {
                         description: location.description
                     });
 
+                    this.addEventToMarkers(marker);
+
                     //fill array of markers with locations data, description and icon image
                     this.markers.push(marker);
 
-                    // add an event handler to the markers
-                    google.maps.event.addListener(marker, 'click', (function(marker) {
-                        return function() {
-                            infowindow.setContent(`<h3>${location.title}</h3>
-                      <p>${location.description}</p>
-                      `);
-                            infowindow.open(map, marker);
-                            toggleBounce(marker);
-                        };
-                    })(marker));
+                }, 3000);
+                
 
 
-                }).catch((error) => {
-                    $('#errorModal').modal('show');
-                    $('.errors').text(error);
-                });
+            }).catch((error) => {
+                $('#errorModal').modal('show');
+                $('.errors').text(error);
             });
-        } // end of getMarkers
+        });
+
+    } // end of getMarkers
+
+
+    /*
+     * addEventToMarkers(marker)
+     *
+     * Gets an a marker, add a click event to it and return a marker with a click event attached
+     * and information about the location in the infoWindow
+     */
+    addEventToMarkers(marker){
+        
+        google.maps.event.addListener(marker, 'click', (function(marker) {
+            return ()=> {
+                infowindow.setContent(`<h3>${marker.title}</h3>
+                <img width='250px' height='250px' src='${classMap.imageUrl}' alt="${marker.description}">                
+                <p>${marker.description}</p>`);
+                infowindow.open(map, marker);
+                toggleBounce(marker);
+            };
+        })(marker));
+       
+    }
 
     /*
      * listLocation(arrayOfMarker)
@@ -107,6 +143,60 @@ class Map {
         });
 
         return listLocations;
+    }// end 
+
+    /*
+     * getVenue(latidute, longitude, query)
+     *
+     * Takes latidute, longitude from markers locations and query from
+     * a marker's description and retrieve the venue id
+     */
+    getVenue(latidute, longitude, query){
+        fetch(`https://api.foursquare.com/v2/venues/search?ll=${latidute},${longitude}&client_id=${this.clientId}&client_secret=${this.clientSecret}&query=${query}&v=20170929`)
+        .then((response)=>{
+            return response.json();
+        }).then((venue)=>{
+            //get picture data
+            this.getVenuePicture(venue.response.venues[0].id);
+            
+        }).catch((error)=>{
+            $('#errorModal').modal('show');
+            $('.errors').text(error);
+        });
+    }// end
+
+    /*
+     * getVenuePicture(venueId)
+     *
+     * Takes a venue id from a location and 
+     */
+    getVenuePicture(venueId){
+        fetch(`https://api.foursquare.com/v2/venues/${venueId}/photos?client_id=${this.clientId}&client_secret=${this.clientSecret}&v=20170929`)
+        .then((response)=>{
+            return response.json();
+        }).then((photo)=>{
+            this.prefix = photo.response.photos.items[0].prefix;
+            this.suffix = photo.response.photos.items[0].suffix;
+            this.width = photo.response.photos.items[0].width;
+            this.height = photo.response.photos.items[0].height;
+            this.size = `${this.width}x${this.height}`;
+            
+            this.imageUrl = this.generatePictureUrl();
+
+        }).catch((error)=>{
+            $('#errorModal').modal('show');
+            $('.errors').text(error);
+        });
+    }
+
+    /*
+     * getVenuePicture(venueId)
+     *
+     * Takes a venue id from a location and 
+     */
+    generatePictureUrl(){
+        console.log(`${this.prefix}${this.size}${this.suffix}`);
+        return `${this.prefix}${this.size}${this.suffix}`
     }
 
 } // end of Map class
@@ -162,15 +252,12 @@ let ViewModel = function() {
 
     //handle the click event in the list of locations
     this.listClick = function() {
-            classMap.markers.forEach((marker) => {
-                if (this.title === marker.title) {
-                    infowindow.open(map, marker);
-                    infowindow.setContent(`<h3>${marker.title}</h3>
-                <p>${marker.description}</p>
-                `);
-                    toggleBounce(marker);
-                }
-            });
+        classMap.markers.forEach((marker) => {
+            if (this.title === marker.title) {
+                infowindow.open(map, marker);
+                toggleBounce(marker);
+            }
+        });
     }; // end of listClick
 
     //filter user input text change

@@ -331,12 +331,3 @@ function mapLoadingError(){
     $('#errorModal').modal('show');
     $('.errors').text("The Google Map could not be loaded, please refresh the page and try again...");
 }
-
-
-//instance of the Map class
-// const classMap = new Map(locations);
-// classMap.loading("Application is loading, please wait... :)");
-
-//Knockoutjs binding
-// ko.applyBindings(new ViewModel());
-

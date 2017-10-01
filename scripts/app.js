@@ -218,6 +218,19 @@ class Map {
         $('.errors').text(error);
     }
 
+    /*
+    * mapLoadingError()
+    *
+    * Starts the modal and tells the user about the error related to the loading 
+    * process of the google map
+    */
+    mapLoadingError(){
+        $('.btn').show();
+        $('.modal-title').text("Opppssss.... There was an error :(");
+        $('#errorModal').modal('show');
+        $('.errors').text("The Google Map could not be loaded, please refresh the page and try again...");
+    }
+
 } // end of Map class
 
 /*
@@ -318,3 +331,4 @@ classMap.loading("Application is loading, please wait... :)");
 
 //Knockoutjs binding
 ko.applyBindings(new ViewModel());
+

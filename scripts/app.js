@@ -3,6 +3,7 @@
 let map;
 let marker;
 let infowindow;
+let classMap;
 
 /*
  * The array of locations in a client-server application would be the
@@ -218,19 +219,6 @@ class Map {
         $('.errors').text(error);
     }
 
-    /*
-    * mapLoadingError()
-    *
-    * Starts the modal and tells the user about the error related to the loading 
-    * process of the google map
-    */
-    mapLoadingError(){
-        $('.btn').show();
-        $('.modal-title').text("Opppssss.... There was an error :(");
-        $('#errorModal').modal('show');
-        $('.errors').text("The Google Map could not be loaded, please refresh the page and try again...");
-    }
-
 } // end of Map class
 
 /*
@@ -239,6 +227,13 @@ class Map {
  * Callback of Google API to Initialize the map
  */
 function initMap() {
+    
+    //instance of the Map class
+    classMap = new Map(locations);
+    classMap.loading("Application is loading, please wait... :)");
+    classMap.createMarkers(locations);
+    //Knockoutjs binding
+    ko.applyBindings(new ViewModel());
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
@@ -318,17 +313,30 @@ let ViewModel = function() {
     }; // end of filterUserText
 
     //position markers into the map when the page is loaded
-    this.initMarkers = function() {
-        classMap.createMarkers(locations);
-    };
+    // this.initMarkers = function() {
+    //     classMap.createMarkers(locations);
+    // };
 
 };
 
+/*
+* mapLoadingError()
+*
+* Starts the modal and tells the user about the error related to the loading 
+* process of the google map
+*/
+function mapLoadingError(){
+    $('.btn').show();
+    $('.modal-title').text("Opppssss.... There was an error :(");
+    $('#errorModal').modal('show');
+    $('.errors').text("The Google Map could not be loaded, please refresh the page and try again...");
+}
+
 
 //instance of the Map class
-const classMap = new Map(locations);
-classMap.loading("Application is loading, please wait... :)");
+// const classMap = new Map(locations);
+// classMap.loading("Application is loading, please wait... :)");
 
 //Knockoutjs binding
-ko.applyBindings(new ViewModel());
+// ko.applyBindings(new ViewModel());
 

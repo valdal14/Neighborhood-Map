@@ -95,7 +95,7 @@ class Map {
                     this.markers.forEach((marker) => {
                         this.addEventToMarkers(marker, this.pictures[counter]);
                         counter += 1;
-                    })
+                    });
                 }
 
                 //remove the loading modal
@@ -191,7 +191,7 @@ class Map {
      * Takes a venue id from a location and
      */
     generatePictureUrl() {
-        return `${this.prefix}${this.size}${this.suffix}`
+        return `${this.prefix}${this.size}${this.suffix}`;
     }
 
     /*
